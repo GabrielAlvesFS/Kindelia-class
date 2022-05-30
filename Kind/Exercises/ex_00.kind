@@ -1,60 +1,170 @@
 // Basic Exercises involving Bools
 
 type Bool {
-  true
-  false
+ true
+ false
 }
 
+//---------------------------------------------------------------
 // Is true
 // Returns true if input is true
-is_true(a: Bool): Bool
-  ?a 
+is_true(a: Bool): Bool 
+  case a{
+    true: Bool.true
+    false: Bool.false	
+  }
+
+ //ex_00:_
+ //is_true(true)
 
 
+//---------------------------------------------------------------
 // Is false
 // Returns true if input is false
 is_false(a: Bool): Bool
-  ?b
+ case a{
+    true: Bool.false
+    false: Bool.true	
+  }
 
+ // ex_00:_
+ // is_false(false)
+
+  
+//---------------------------------------------------------------
 // Negation
 // Returns the opposite of a Bool
 neg(b: Bool): Bool 
-  ?c
+  case b{
+    true: Bool.false 
+    false: Bool.true
+  }
+  
+   // ex_00:_
+   // neg(true)
 
+
+//---------------------------------------------------------------
 // And
 // Returns true if both inputs are true
-and(a: Bool, b: Bool): Bool
-  ?d
+ and(a: Bool, b: Bool): Bool
+  case a{
+  	true: b
+	  false: Bool.false
+  }
 
+    // ex_00:_
+    // and(true, true)
+
+  
+//---------------------------------------------------------------
 // Or
 // Returs true if any input is true
-or(a: Bool, b: Bool): Bool
-  ?e
+ or(a: Bool, b: Bool): Bool
+   case a{
+      true: Bool.true
+      false: 
+      case b{
+        true: Bool.true
+        false: Bool.false
+      }
+    }
 
+  // ex_00:_ 
+  //or(false, false)
+
+  
+//---------------------------------------------------------------
 // Equal
 // Returs true if both inputs are identical
 eql(a: Bool, b: Bool): Bool
-  ?f
+  case a{
+    true: b
+    false: 
+    case b {
+      true: Bool.false
+      false: Bool.true
+    }
+  }
+  
+//    ex_00:_  
+//    eql(true, true)
+  
 
+//---------------------------------------------------------------
 // Xor
 // Returns true if both inputs are different
 xor(a: Bool, b: Bool): Bool
-  ?g
+  case a{
+    true: 
+    case b {
+      true: Bool.false
+      false: Bool.true
+    }
 
+    false: 
+    case b {
+      true: Bool.true
+      false: Bool.false
+    }
+    
+  }
+     
+//  ex_00:_
+//  xor(false, false)
+
+
+//---------------------------------------------------------------
 // Nor
 // Returns true if both inputs are false
 nor(a: Bool, b: Bool): Bool
-  ?h
+	case a{
+    true: Bool.false
+    false: 
+    case b{
+      false: Bool.true 			
+      true: Bool.false		
+    }
 
+	}
+	
+//	ex_00:_
+//	nor(true, false)
+
+
+//---------------------------------------------------------------
 // Nand
 // Returns false only if both inputs are true
 nand(a: Bool, b: Bool): Bool
-  ?i
+  case a{ 
+    true: 
+    case b{
+      true: Bool.false 			
+      false: Bool.true		
+    }
 
+    false: Bool.true  
+  }
+	
+//	ex_00:_
+//	nand(true, true)
+  
+
+//---------------------------------------------------------------
 // Xnor
 // Returns true if both inputs are identical
 xnor(a: Bool, b: Bool): Bool
-  ?j
+  case a{
+	  true: b
+	  false: 
+    case b {
+		  true: Bool.false
+		  false: Bool.true
+	  }
+  }
+
+//   ex_00:_
+//   xnor(true, false)
 
 
 ex_00: IO<Unit>
