@@ -5,47 +5,173 @@ type List <A: Type> {
   cons(head: A, tail: List<A>)
 }
 
+//----------------------------------------------------------------------
 // Returns the head of the List
 head<A: Type>(xs: List<A>): Maybe<A>
-  ?head
+  case xs{
+    nil: Maybe.none<A>
+    cons: Maybe.some<A>(xs.head)
+  }
 
+  // ex_08:_
+  //   let lista = [1,2,3,4,5,6,7,8]
+  //   head<Nat>(lista)    
+
+
+//----------------------------------------------------------------------
 // Returns the list without the first element
 tail<A: Type>(xs: List<A>): List<A>
-  ?a
+  case xs{
+    nil: xs
+    cons: xs.tail
+  }
 
+  // ex_08: String
+  //   let lista = [1,2,3,4,5,6,7,8]
+  //   List.show<Nat>(Nat.show, tail<Nat>(lista))
+
+
+//----------------------------------------------------------------------
 // Returns the length of a list
 length<A: Type>(xs: List<A>): Nat
-  ?a
+  case xs{
+    nil: Nat.zero
+    cons: Nat.succ(length<A>(xs.tail))  
+  }
 
+  // ex_08: Nat
+  //   let lista = [9,10,20,40,1,23,45]
+  //   length<Nat>(lista)
+
+
+//----------------------------------------------------------------------
 // Returns the last element of a list
 last<A: Type>(xs: List<A>): Maybe<A>
-  ?last
+  case xs{
+    nil: Maybe.none<A>
+    cons: 
+    case xs.tail{
+      nil: Maybe.some<A>(xs.head)
+      cons: last<A>(xs.tail)
+    }
+  }
 
+  // ex_08: Maybe<Nat>
+  //   let lista = [9,10,20,40,1,23,45]
+  //   last<Nat>(lista)
+
+//retorna lista com o ultimo elemento
+lastList<A: Type>(xs: List<A>): List<A>
+  case xs{
+    nil: List.nil<A>
+    cons: 
+    case xs.tail{
+      nil: List.cons<A>(xs.head, List.nil<A>)
+      cons: lastList<A>(xs.tail)
+    }
+  }
+
+  // ex_08: _
+  //   let lista = [9,10,20,40,1,23,45]
+  //   List.show<Nat>(Nat.show, lastList<Nat>(lista))
+
+
+//----------------------------------------------------------------------
 // Returns the list without the last element
 init<A: Type>(xs: List<A>): List<A>
-  ?init
+  case xs{
+    nil: List.nil<A>
+    cons: 
+    case xs.tail{
+      nil: List.nil<A>
+      cons: List.cons<A>(xs.head, init<A>(xs.tail) )
+    }
+  }
 
+// ex_08: List<Nat>
+//     let lista = [9,10,20,40,1,45]
+//     List.show<Nat>(Nat.show, init<Nat>(lista))
+
+
+//----------------------------------------------------------------------
 // Concatenates two lists
 concat<A: Type>(xs: List<A>, ys: List<A>): List<A>
-  ?a
+  case xs{
+    nil: ys
+    cons: List.cons<A>(xs.head, concat<A>(xs.tail, ys))
+  }
 
+  // ex_08: List<Nat>
+  //   let lista = [9,10,20,40,1,23,45]
+  //   let lista2 = [99, 85, 67, 23]
+  //   List.show<Nat>(Nat.show, concat<Nat>(lista, lista2))
+
+
+//----------------------------------------------------------------------
 // Removes n elements from the start of the list
 // List.drop<Nat>(3, [1,2,3,4,5]) -> [4, 5]
 drop<A: Type>(n: Nat, xs: List<A>): List<A>
-  ?drop
+  case n{
+    zero: xs
+    succ: 
+    case xs{
+      nil: List.nil<A>
+      cons: drop<A>(n.pred, xs.tail)
+    }
+  }
 
+  // ex_08: _
+  //     let lista = [9,10,20,40,1,45]
+  //     List.show<Nat>(Nat.show, drop<Nat>(3, lista))
+
+
+//----------------------------------------------------------------------
 // Creates a new list with the N first elements of the previous list
 // List.take<Nat>(3, [1,2,3,4,5]) -> [1,2,3]
 take<A: Type>(n: Nat, xs: List<A>): List<A>
-  ?take
+  case n{
+    zero: List.nil<A>
+    succ: case xs{
+      nil: List.nil<A>
+      cons: List.cons<A>(xs.head, take<A>(n.pred, xs.tail))
+    }
+  }
+
+  // ex_08: _
+  //     let lista = [9,10,20,40,1,45]
+  //     List.show<Nat>(Nat.show, take<Nat>(2, lista))
+
+
+//----------------------------------------------------------------------
+//  map<A: Type, B: Type>(fn: A -> B, pair: Pair<A,A>): Pair<B,B>
+//    case pair{
+//      new: Pair.new<B, B>(fn(pair.fst), fn(pair.snd))
+//    }
 
 // Applies a function to all elements of a list
 map<A: Type, B: Type>(fn: A -> B, xs: List<A>): List<B>
-  ?a
+  case xs{
+    nil: List.nil<B>
+    cons: List.cons<B>(fn(xs.head), map<A,B>(fn, xs.tail))
+  }
 
+  // ex_08:_
+  //   let lista = [9,10,20,40,1,45]
+  //   List.show<Nat>(Nat.show, map<Nat, Nat>(Nat.succ, lista))
+
+
+//----------------------------------------------------------------------
 // Returns the same list, with the order reversed
+reverse.go<A: Type>(new_list: List<A>, old_list: List<A>): List<A>
+  case old_list {
+    nil: new_list
+    cons: reverse.go<A>(List.cons<A>(old_list.head, new_list), old_list.tail)
+  }
+
 reverse<A: Type>(xs: List<A>): List<A>
   reverse.go<A>(List.nil<A>, xs)
 
-reverse.go<A: Type>(new_list: List<A>, old_list: List<A>): List<A>
-  ?r
+// ex_08:_  
+// let Lista = [5, 6, 7, 8]  //lista tipo Nat
+// List.show<Nat>(Nat.show, reverse<Nat>(Lista))
+
