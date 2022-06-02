@@ -10,34 +10,174 @@ type Maybe <A: Type> {
   some(value: A)
 }
 
+sub(a: Nat, b: Nat): Nat
+  case a{
+    zero: Nat.zero
+    succ: case b{
+            zero: a
+            succ: sub(a.pred, b.pred) 
+    }
+  }
+  
+ltn(a: Nat, b: Nat): Bool // if A > B == False else true 
+    case b{
+    zero: Bool.false
+    succ: 
+    case a{
+      zero: Bool.true
+      succ: 
+      case sub(b, a){
+        zero: Bool.false
+        succ: Bool.true
+      }
+    }
+  } 
+
+  eql(a: Nat, b: Nat): Bool // Given 2 numbers, it returns true if the 2 are the same and false if they are different.
+  case a{
+    zero: case b {
+            zero: Bool.true
+            succ: Bool.false
+    }
+
+    succ: case b{
+            zero: Bool.false
+            succ: eql(a.pred, b.pred)
+    }
+  }
+
+
+//----------------------------------------------------------------------------------
 // Returns pairs of the elements of the 2 input lists on the same index
 // Ex: zip!!([1,2], ["a","b","c"]) == [{1, "a"}, {2 , "b"}]
 // Ex: zip!!(["a", "b"], [3, 5])   == [{"a", 3}, {2 , "b"}]
 zip<A: Type, B: Type>(xs: List<A>, ys: List<B>): List<Pair<A,B>>
-  ?a
+  case xs{
+    nil: List.nil<Pair<A, B>>
+    cons: 
+    case ys{
+      nil: List.nil<Pair<A, B>>
+      cons: List.cons<Pair<A, B>>(Pair.new<A, B>(xs.head, ys.head), zip<A, B>(xs.tail, ys.tail))
+    }
+  }
 
+  // ex_09:_
+  // let L1 = ["a", "b", "c", "d"] 
+  // let L2 = [1, 2, 3, 4]
+  // List.show<Pair<String, Nat>>(Pair.show<String, Nat>((a)a, Nat.show), zip<String, Nat>(L1, L2))
+  // List.show<Pair<String, Nat>>(Pair.show<String, Nat>(zip!!(L1, L2)))
+  //   List.show<Nat>(Nat.show, delete_smallest(lista))
+
+
+//----------------------------------------------------------------------------------
 // Returns the smallest element of a List
 smallest(xs: List<Nat>): Maybe<Nat>
-  ?s
+  case xs{
+    nil: Maybe.none<Nat>
+    cons: 
+    case xs.tail{
+      nil: Maybe.some<Nat>(xs.head)
+      cons: 
+      case ltn(xs.head, xs.tail.head){
+        true: smallest(List.cons<Nat>(xs.head, xs.tail.tail))
+        false: smallest(xs.tail)
+      }
+    }
+  }
 
+  // ex_09:_
+  // let lista = [3, 1, 4, 5, 6, 0 ,2]
+  // smallest(lista)
+
+smallest.go(xs: List<Nat>): Nat        //Dani me passou
+  case smallest(xs){
+    none: 0
+    some: self.value
+  }  
+
+//----------------------------------------------------------------------------------
 // Returns the same list without the smallest element
 delete_smallest(xs: List<Nat>): List<Nat>
-  ?d
 
+  case xs{
+    nil: List.nil<Nat>
+    cons: 
+    case xs.tail{
+      nil: List.nil<Nat>
+      cons: 
+      let smallest = smallest(xs) <> 0
+      case eql(smallest, xs.head){
+        true: xs.tail
+        false: List.cons<Nat>(xs.head, delete_smallest(xs.tail))
+      }
+    }
+  }
+
+// ex_09:_
+//   let lista = [3, 1, 4, 5, 6, 0 ,2]
+//   List.show<Nat>(Nat.show, delete_smallest(lista))
+
+
+//----------------------------------------------------------------------------------
 // Returns the same list, in ascending order
 sort_ascending(xs: List<Nat>): List<Nat>
-  ?a
+  case xs{
+    nil: List.nil<Nat>
+    cons: 
+    case xs.tail{
+      nil: List.cons<Nat>(xs.head, List.nil<Nat>)
+      cons:
+      let smallest = smallest(xs) <> 0 
+      List.cons<Nat>(smallest, sort_ascending(delete_smallest(xs)))
+    }
+  }
 
+  // ex_09:_
+  // let lista = [3, 1, 4, 5, 6, 0 ,2]
+  // List.show<Nat>(Nat.show, sort_ascending(lista))
+
+
+//----------------------------------------------------------------------------------
 // Returns an element at an index from the list
 // if there is an element at that index
 //   returns Maybe.some!(element)
 // else
 //   returns Maybe.none!
 get<A: Type>(idx: Nat, xs: List<A>): Maybe<A>
-  ?g
+  case xs{
+    nil: Maybe.none<A>
+    cons: 
+    case idx{
+      zero: Maybe.some<A>(xs.head)
+      succ:
+      //get<A>(idx.pred, xs.pred) 
+      case List.drop<A>(idx, xs) {
+        nil: Maybe.none<A>
+        cons: Maybe.some<A>(self.head)
+      }
+    }
+  }
 
+  // ex_09:_
+  // let lista = [3, 1, 4, 5, 6, 0 ,2]
+  // get<Nat>(6, lista)
+  
+// ["joao", "lucas", "carol"]
+//    0         1       2
+
+//----------------------------------------------------------------------------------
 // Removes all elements that does not match a condition
 // List.filter<Nat>(Nat.odd, [1, 2, 3, 4, 5]) = [1, 3, 5]
-filter<A: Type>(f: A -> Bool, xs: List<A>): List<A>
-  ?f
+filter<A: Type>(fn: A -> Bool, xs: List<A>): List<A>
+  case xs{
+    nil: List.nil<A>
+    cons: 
+    case fn(xs.head){
+      true: List.cons<A>(xs.head, filter<A>(fn, xs.tail))
+      false: filter<A>(fn, xs.tail)
+    }
+  }
   
+  // ex_09:_
+  // let lista = [1, 2, 3, 4, 5]
+  // List.show<Nat>(Nat.show, filter<Nat>(Nat.is_even, lista))
